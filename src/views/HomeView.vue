@@ -17,6 +17,7 @@
       <div class="px-1 m-2 bg-[#F0F0F0] flex items-center justify-center rounded-md">
         <MagnifyIcon fillColor="#515151" class="ml-2"/>
         <input
+          @click = "showFindFriends = !showFindFriends"
          class=
           " ml-5
             appearance-none
@@ -40,14 +41,14 @@
   </div>
 
   <div v-if="showFindFriends">
-    <ChatsView class="mt-[100px]"/>
-  </div>
-  <div v-else>
     <FindFriendsView class="pt-28"/>
   </div>
+  <div v-else>
+    <ChatsView class="mt-[100px]"/>
+  </div>
 
 
-  <div v-if="open">
+  <div v-if="userDataForChat.length">
     <MessageView/>
   </div>
   <div v-else>
@@ -78,18 +79,28 @@ import MessageView from "@/views/MessageView.vue";
 import AccountGroupIcon from 'vue-material-design-icons/AccountGroup.vue'
 import DotsVerticalIcon from 'vue-material-design-icons/DotsVertical.vue'
 import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import FindFriendsView from "@/views/FindFriendsView.vue";
-
+import {useRouter} from 'vue-router'
 import {useUserStore} from "@/store/user-store.js";
+import { storeToRefs } from "pinia";
+
 const userStore=useUserStore()
+const {showFindFriends,userDataForChat}=storeToRefs(userStore)
 
-const open=ref(true)
-const showFindFriends=ref(false)
+const router=useRouter()
 
+onMounted(async()=>{
+  try{
+    userStore.getAllUsers()
+    await userStore.getAllChatsByUser()
+  }catch(error){
+    console.log(error)
+  }
+})
 const logout = ()=>{
   let res =confirm('Are you sure you want to logout?')
-  if(res) userStore.logout
+  if(res) userStore.logout();router.push('/login')
 }
 </script>
 

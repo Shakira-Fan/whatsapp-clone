@@ -26,6 +26,7 @@ import {useUserStore} from "@/store/user-store.js";
 import {useRouter} from 'vue-router'
 const userStore=useUserStore()
 const router=useRouter()
+
 const callback = async (response)=>{
     await userStore.getUserDetailsFromGoogle(response)
     setTimeout(()=>{ router.push('/'),200})
